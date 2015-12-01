@@ -26,6 +26,7 @@ public class GameStatusTooltipController {
   ImageView mapPreview;
   @FXML
   VBox gameStatusTooltipRoot;
+
   @Resource
   MapService mapService;
   @Resource
@@ -35,7 +36,7 @@ public class GameStatusTooltipController {
 
   public void setGameInfoBean(GameInfoBean gameInfoBean) {
     mapPreview.setImage(mapService.loadSmallPreview(gameInfoBean.getMapTechnicalName()));
-    MapInfoBean mapInfoBean = mapService.getMapInfoBeanFromVaultByName(gameInfoBean.getMapTechnicalName());
+    MapInfoBean mapInfoBean = mapService.findMapByName(gameInfoBean.getMapTechnicalName());
 
     gameTitleLabel.setText(i18n.get("chat.gameStatus.gameTitle", gameInfoBean.getTitle()));
     featuredModLabel.setText(i18n.get("chat.gameStatus.featuredMod", gameInfoBean.getFeaturedMod()));

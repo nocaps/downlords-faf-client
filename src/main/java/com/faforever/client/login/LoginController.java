@@ -1,10 +1,13 @@
 package com.faforever.client.login;
 
 import com.faforever.client.fx.StageConfigurator;
+import com.faforever.client.fx.WindowDecorator;
 import com.faforever.client.i18n.I18n;
 import com.faforever.client.preferences.LoginPrefs;
 import com.faforever.client.preferences.PreferencesService;
+import com.faforever.client.preferences.WindowPrefs;
 import com.faforever.client.user.UserService;
+import com.faforever.client.util.JavaFxUtil;
 import com.google.common.base.Strings;
 import com.google.common.hash.Hashing;
 import javafx.application.Platform;
@@ -93,6 +96,14 @@ public class LoginController {
     usernameInput.setText(Strings.nullToEmpty(username));
     autoLoginCheckBox.setSelected(isAutoLogin);
 
+    if (!loggedOut) {
+      // Only init the stage if the user just opened the window, not after he logged out
+      final WindowPrefs mainWindowPrefs = preferencesService.getPreferences().getMainWindow();
+      stage.show();
+      restoreState(mainWindowPrefs, stage);
+      JavaFxUtil.centerOnScreen(stage);
+    }
+
     if (loginPrefs.getAutoLogin() && !isNullOrEmpty(username) && !isNullOrEmpty(password) && !loggedOut) {
       login(username, password, true);
     } else if (isNullOrEmpty(username)) {
@@ -107,6 +118,22 @@ public class LoginController {
     loginProgressPane.setVisible(show);
     loginButton.setDisable(show);
     loginErrorLabel.setVisible(false);
+  }
+
+  private void restoreState(WindowPrefs mainWindowPrefs, Stage stage) {
+    stage.setWidth(mainWindowPrefs.getWidth());
+    stage.setHeight(mainWindowPrefs.getHeight());
+
+    if (mainWindowPrefs.getMaximized()) {
+      WindowDecorator.maximize(stage);
+    } else {
+      if (mainWindowPrefs.getX() < 0 && mainWindowPrefs.getY() < 0) {
+        JavaFxUtil.centerOnScreen(stage);
+      } else {
+        stage.setX(mainWindowPrefs.getX());
+        stage.setY(mainWindowPrefs.getY());
+      }
+    }
   }
 
   private void login(String username, String password, boolean autoLogin) {

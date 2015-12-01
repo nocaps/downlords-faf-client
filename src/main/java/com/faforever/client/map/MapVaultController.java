@@ -2,12 +2,12 @@ package com.faforever.client.map;
 
 import com.faforever.client.game.MapInfoBean;
 import com.faforever.client.game.MapSize;
-import javafx.collections.FXCollections;
 import javafx.fxml.FXML;
 import javafx.scene.Node;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.layout.Pane;
+import org.apache.maven.artifact.versioning.ComparableVersion;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -49,7 +49,7 @@ public class MapVaultController {
   TableColumn<MapInfoBean, Number> playersColumn;
 
   @FXML
-  TableColumn<MapInfoBean, Number> versionColumn;
+  TableColumn<MapInfoBean, ComparableVersion> versionColumn;
 
   @Resource
   MapService mapService;
@@ -69,15 +69,5 @@ public class MapVaultController {
     sizeColumn.setCellValueFactory(param -> param.getValue().sizeProperty());
     playersColumn.setCellValueFactory(param -> param.getValue().playersProperty());
     versionColumn.setCellValueFactory(param -> param.getValue().versionProperty());
-  }
-
-  public void setUpIfNecessary() {
-    // FIXME test code so far
-    mapService.readMapVaultInBackground(0, 100)
-        .thenAccept(mapInfoBeans -> mapTableView.setItems(FXCollections.observableList(mapInfoBeans)))
-        .exceptionally(throwable -> {
-          logger.warn("Failed", throwable);
-          return null;
-        });
   }
 }

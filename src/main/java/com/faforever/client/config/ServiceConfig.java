@@ -35,9 +35,6 @@ import com.faforever.client.legacy.UidService;
 import com.faforever.client.legacy.UnixUidService;
 import com.faforever.client.legacy.WindowsUidService;
 import com.faforever.client.legacy.htmlparser.HtmlParser;
-import com.faforever.client.legacy.map.LegacyMapVaultParser;
-import com.faforever.client.legacy.map.MapVaultParser;
-import com.faforever.client.map.MapService;
 import com.faforever.client.map.MapServiceImpl;
 import com.faforever.client.mod.ModService;
 import com.faforever.client.mod.ModServiceImpl;
@@ -161,11 +158,6 @@ public class ServiceConfig {
       return new MockChatService();
     }
     return new PircBotXChatService();
-  }
-
-  @Bean
-  MapVaultParser mapVaultParser() {
-    return new LegacyMapVaultParser();
   }
 
   @Bean

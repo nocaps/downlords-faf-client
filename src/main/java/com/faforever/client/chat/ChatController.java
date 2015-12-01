@@ -57,6 +57,7 @@ public class ChatController implements
     chatService.addOnChatUserJoinedChannelListener(this);
     chatService.addOnChatUserLeftChannelListener(this);
     chatService.addOnJoinChannelsRequestListener(this::onJoinChannelsRequest);
+    userService.addOnLogoutListener(this::onLoggedOut);
 
     chatService.connectionStateProperty().addListener((observable, oldValue, newValue) -> {
       switch (newValue) {
@@ -65,8 +66,6 @@ public class ChatController implements
           break;
       }
     });
-
-    userService.addOnLogoutListener(this::onLoggedOut);
   }
 
   private void onDisconnected() {

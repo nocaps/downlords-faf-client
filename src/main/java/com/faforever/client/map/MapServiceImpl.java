@@ -1,10 +1,9 @@
 package com.faforever.client.map;
 
+import com.faforever.client.api.FafApiAccessor;
 import com.faforever.client.config.CacheNames;
 import com.faforever.client.game.MapInfoBean;
 import com.faforever.client.game.MapSize;
-import com.faforever.client.legacy.map.Comment;
-import com.faforever.client.legacy.map.MapVaultParser;
 import com.faforever.client.preferences.PreferencesService;
 import com.faforever.client.task.TaskService;
 import javafx.collections.FXCollections;
@@ -27,11 +26,9 @@ import java.nio.file.DirectoryStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedList;
-import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Properties;
@@ -72,9 +69,9 @@ public class MapServiceImpl implements MapService {
   @Resource
   TaskService taskService;
   @Resource
-  MapVaultParser mapVaultParser;
-  @Resource
   ApplicationContext applicationContext;
+  @Resource
+  FafApiAccessor fafApiAccessor;
 
   @Value("${vault.mapDownloadUrl}")
   String mapDownloadUrl;
@@ -101,14 +98,6 @@ public class MapServiceImpl implements MapService {
     logger.debug("Fetching large preview for map {} from {}", mapName, urlString);
 
     return fetchImageOrNull(urlString);
-  }
-
-  @Override
-  public CompletableFuture<List<MapInfoBean>> readMapVaultInBackground(int page, int maxEntries) {
-    MapVaultParseTask task = applicationContext.getBean(MapVaultParseTask.class);
-    task.setMaxEntries(maxEntries);
-    task.setPage(page);
-    return taskService.submitTask(task);
   }
 
   @Override
@@ -177,7 +166,8 @@ public class MapServiceImpl implements MapService {
         Properties properties = new Properties();
         properties.load(inputStream);
 
-        MapInfoBean mapInfoBean = new MapInfoBean(mapPath.getFileName().toString());
+        MapInfoBean mapInfoBean = new MapInfoBean();
+        mapInfoBean.setTechnicalName(mapPath.getFileName().toString());
         mapInfoBean.setDisplayName(stripQuotes(properties.getProperty("name")));
         mapInfoBean.setDescription(stripQuotes(properties.getProperty("description")));
 
@@ -193,18 +183,8 @@ public class MapServiceImpl implements MapService {
   }
 
   @Override
-  public MapInfoBean getMapInfoBeanFromVaultByName(String mapName) {
-    logger.info("Trying to return {} mapInfoBean from vault", mapName);
-    //TODO implement official map vault parser
-    if (isOfficialMap(mapName)) {
-      return null;
-    }
-    try {
-      return mapVaultParser.parseSingleMap(mapName);
-    } catch (IOException | IllegalStateException e) {
-      logger.error("Error in parsing {} from vault", mapName);
-      return null;
-    }
+  public MapInfoBean findMapByName(String mapName) {
+    return fafApiAccessor.findMapByName(mapName);
   }
 
   @Override
@@ -235,20 +215,6 @@ public class MapServiceImpl implements MapService {
     task.setMapUrl(mapUrl);
     task.setTechnicalMapName(technicalMapName);
     return taskService.submitTask(task);
-  }
-
-  @Override
-  public List<Comment> getComments(int mapId) {
-    //int mapId = getMapInfoBeanFromVaultByName(mapName).getId();
-    if (mapId == 0) {
-      return Collections.emptyList();
-    }
-    try {
-      return mapVaultParser.parseComments(mapId);
-    } catch (IOException e) {
-      logger.error("Error in parsing comment for {}", mapId);
-    }
-    return null;
   }
 
   private static String getMapUrl(String mapName, String baseUrl) {

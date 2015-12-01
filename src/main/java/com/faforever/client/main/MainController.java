@@ -878,7 +878,6 @@ public class MainController implements OnChoseGameDirectoryListener {
 
   @FXML
   void onMapsSelected(ActionEvent event) {
-    mapMapVaultController.setUpIfNecessary();
     setContent(mapMapVaultController.getRoot());
     setActiveNavigationButtonFromChild((MenuItem) event.getTarget());
   }

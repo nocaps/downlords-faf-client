@@ -2,7 +2,6 @@ package com.faforever.client.map;
 
 import com.faforever.client.game.MapInfoBean;
 import com.faforever.client.i18n.I18n;
-import com.faforever.client.legacy.map.Comment;
 import javafx.fxml.FXML;
 import javafx.scene.control.Label;
 import javafx.scene.image.ImageView;
@@ -61,11 +60,6 @@ public class MapDetailController {
     mapDescriptionLabel.setText(mapInfoBean.getDescription());
 
     commentContainer.getChildren().clear();
-    for (Comment comment : mapService.getComments(mapInfoBean.getId())) {
-      CommentCardController commentCardController = applicationContext.getBean(CommentCardController.class);
-      commentCardController.addComment(comment);
-      commentContainer.getChildren().add(commentCardController.getRoot());
-    }
   }
 
   public Region getRoot() {
