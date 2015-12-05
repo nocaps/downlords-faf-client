@@ -6,10 +6,12 @@ import com.faforever.client.game.MapInfoBean;
 import com.faforever.client.game.MapSize;
 import com.faforever.client.preferences.PreferencesService;
 import com.faforever.client.task.TaskService;
+import com.faforever.client.util.LuaUtil;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.scene.image.Image;
 import org.jetbrains.annotations.Nullable;
+import org.luaj.vm2.LuaValue;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
@@ -18,7 +20,6 @@ import org.springframework.context.ApplicationContext;
 
 import javax.annotation.Resource;
 import java.io.IOException;
-import java.io.InputStream;
 import java.lang.invoke.MethodHandles;
 import java.net.HttpURLConnection;
 import java.net.URL;
@@ -31,10 +32,7 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.Locale;
 import java.util.Map;
-import java.util.Properties;
 import java.util.concurrent.CompletableFuture;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 import static com.faforever.client.util.LuaUtil.stripQuotes;
 
@@ -62,7 +60,7 @@ public class MapServiceImpl implements MapService {
   }
 
   private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
-  private static final Pattern MAP_SIZE_PATTERN = Pattern.compile("(\\d+),\\s*(\\d+)");
+  private static final float MAP_SIZE_FACTOR = 102.4f;
 
   @Resource
   PreferencesService preferencesService;
@@ -162,23 +160,19 @@ public class MapServiceImpl implements MapService {
         return null;
       }
 
-      try (InputStream inputStream = Files.newInputStream(iterator.next())) {
-        Properties properties = new Properties();
-        properties.load(inputStream);
+      LuaValue luaValue = LuaUtil.loadFile(iterator.next()).get("ScenarioInfo");
+      LuaValue size = luaValue.get("size");
 
-        MapInfoBean mapInfoBean = new MapInfoBean();
-        mapInfoBean.setTechnicalName(mapPath.getFileName().toString());
-        mapInfoBean.setDisplayName(stripQuotes(properties.getProperty("name")));
-        mapInfoBean.setDescription(stripQuotes(properties.getProperty("description")));
-
-        Matcher matcher = MAP_SIZE_PATTERN.matcher(properties.getProperty("size"));
-        if (matcher.find()) {
-          int width = Integer.parseInt(matcher.group(1));
-          int height = Integer.parseInt(matcher.group(2));
-          mapInfoBean.setSize(new MapSize(width, height));
-        }
-        return mapInfoBean;
-      }
+      MapInfoBean mapInfoBean = new MapInfoBean();
+      mapInfoBean.setTechnicalName(mapPath.getFileName().toString());
+      mapInfoBean.setDisplayName(luaValue.get("name").toString());
+      mapInfoBean.setDescription(luaValue.get("description").tojstring().replaceAll("<LOC .*?>", ""));
+      mapInfoBean.setSize(new MapSize(
+          (int) (size.get(1).toint() / MAP_SIZE_FACTOR),
+          (int) (size.get(2).toint() / MAP_SIZE_FACTOR))
+      );
+      mapInfoBean.setPlayers(luaValue.get("Configurations").get("standard").get("teams").get(1).get("armies").length());
+      return mapInfoBean;
     }
   }
 

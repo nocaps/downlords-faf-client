@@ -145,4 +145,5 @@ dependencies {
   compile 'org.apache.lucene:lucene-suggest:5.3.1'
   compile 'org.opentelecoms.ice:ice4j-fork:1.0+f.4'
   compile 'com.nativelibs4java:bridj:0.7.0'
+  compile 'org.luaj:luaj-jse:3.0.1'
 }
