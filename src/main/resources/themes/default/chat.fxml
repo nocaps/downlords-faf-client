@@ -9,24 +9,16 @@
 <AnchorPane xmlns:fx="http://javafx.com/fxml/1" fx:id="chatRoot" xmlns="http://javafx.com/javafx/8.0.40"
             fx:controller="com.faforever.client.chat.ChatController">
   <children>
-    <TabPane fx:id="chatsTabPane"
-             tabClosingPolicy="ALL_TABS"
-             AnchorPane.bottomAnchor="0.0"
-             AnchorPane.leftAnchor="0.0"
-             AnchorPane.rightAnchor="0.0"
-             AnchorPane.topAnchor="0.0"/>
+    <TabPane fx:id="chatsTabPane" tabClosingPolicy="ALL_TABS" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0"
+             AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0"/>
 
-    <VBox fx:id="connectingProgressPane"
-          alignment="CENTER"
-          AnchorPane.bottomAnchor="0.0"
-          AnchorPane.leftAnchor="0.0"
-          AnchorPane.rightAnchor="0.0"
-          AnchorPane.topAnchor="0.0">
+    <VBox fx:id="connectingProgressPane" alignment="CENTER" spacing="10.0" AnchorPane.bottomAnchor="0.0"
+          AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
       <children>
         <ProgressIndicator prefHeight="80.0" prefWidth="80.0"/>
         <Label text="%irc.connecting.message">
           <VBox.margin>
-            <Insets bottom="28.0" top="14.0"/>
+            <Insets/>
           </VBox.margin>
         </Label>
       </children>
