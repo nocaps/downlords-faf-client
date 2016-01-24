@@ -6,8 +6,8 @@ import com.faforever.client.api.Mod;
 import com.faforever.client.api.PlayerAchievement;
 import com.faforever.client.api.PlayerEvent;
 import com.faforever.client.api.Ranked1v1Stats;
-import com.faforever.client.leaderboard.Ranked1v1EntryBean;
 import com.faforever.client.game.MapInfoBean;
+import com.faforever.client.leaderboard.Ranked1v1EntryBean;
 import com.faforever.client.mod.ModInfoBean;
 
 import java.time.LocalDateTime;
@@ -57,6 +57,11 @@ public class MockFafApiAccessor implements FafApiAccessor {
   }
 
   @Override
+  public MapInfoBean findMapByName(String mapId) {
+    return null;
+  }
+
+  @Override
   public List<Ranked1v1EntryBean> getRanked1v1Entries() {
     return null;
   }
@@ -68,11 +73,6 @@ public class MockFafApiAccessor implements FafApiAccessor {
 
   @Override
   public Ranked1v1EntryBean getRanked1v1EntryForPlayer(int playerId) {
-    return null;
-  }
-
-  @Override
-  public MapInfoBean findMapByName(String mapId) {
     return null;
   }
 }

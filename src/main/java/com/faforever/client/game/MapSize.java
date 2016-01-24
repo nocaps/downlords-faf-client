@@ -7,6 +7,10 @@ public class MapSize implements Comparable<MapSize> {
   private int width;
   private int height;
 
+  /**
+   * @param width in kilometers
+   * @param height in kilometers
+   */
   public MapSize(int width, int height) {
     this.width = width;
     this.height = height;
